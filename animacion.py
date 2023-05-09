@@ -114,7 +114,7 @@ ax.set_xlim(x_min, x_max)
 ax.set_ylim(y_min, y_max)
 
 # Añadir título
-ax.set_title(r'El cohete no aterriza en la Luna ($\theta(0)=\phi(0)=0.45$)')
+ax.set_title(r'El cohete orbita alrededor de la Tierra ($v(0)< v_{esc}$)')
 
 # Si solo se ha dado un radio para todos los planetas, conviértelo a una
 # lista con todos los elementos iguales
