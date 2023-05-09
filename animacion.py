@@ -1,16 +1,16 @@
 # ================================================================================
-# ANIMACION COHETE
+# ANIMACION SISTEMA SOLAR
 #
 # Genera una animación a partir de un fichero de datos con las posiciones
-# de los cuerpos en diferentes instantes de tiempo.
+# de los planetas en diferentes instantes de tiempo.
 # 
-# El fichero debe estructurarse de la siguiente forma: (cada bloque es un frame para la animación)
+# El fichero debe estructurarse de la siguiente forma:
 # 
 #   x1_1, y1_1
 #   x2_1, y2_1
 #   x3_1, y3_1
 #   (...)
-#   xN_1, yN_1  N=número de cuerpos (en este caso 3)
+#   xN_1, yN_1
 #   
 #   x1_2, y1_2
 #   x2_2, y2_2
@@ -26,9 +26,9 @@
 #   
 #   (...)
 #
-# donde xi_j es la componente x del cuerpo i-ésimo en el instante de
+# donde xi_j es la componente x del planeta i-ésimo en el instante de
 # tiempo j-ésimo, e yi_j lo mismo en la componente y. El programa asume que
-# el nº de cuerpos es siempre el mismo.
+# el nº de planetas es siempre el mismo.
 # ¡OJO! Los datos están separados por comas.
 # 
 # Si solo se especifica un instante de tiempo, se genera una imagen en pdf
@@ -47,28 +47,27 @@ import numpy as np
 
 # Parámetros
 # ========================================
-file_in = "posicion.txt" # Nombre del fichero de datos
-file_out = "movimiento_cohete" # Nombre del fichero de salida (sin extensión)
+file_in = "datos.txt" # Nombre del fichero de datos
+file_out = "nave" # Nombre del fichero de salida (sin extensión)
 
 # Límites de los ejes X e Y
-x_min = -50
-x_max = 50
-y_min = -50 
-y_max = 50
+x_min = -1.5
+x_max = 1.5
+y_min = -0.8
+y_max = 0.8
 
-interval = 100 # Tiempo entre fotogramas en milisegundos
-show_trail = True # Muestra la "estela" del planeta
+interval = 10 # Tiempo entre fotogramas en milisegundos
+show_trail = False # Muestra la "estela" del planeta
 trail_width = 1 # Ancho de la estela
-save_to_file = False # False: muestra la animación por pantalla,
+save_to_file = True # False: muestra la animación por pantalla,
                      # True: la guarda en un fichero
 dpi = 150 # Calidad del vídeo de salida (dots per inch)
 
 # Radio del planeta, en las mismas unidades que la posición
 # Puede ser un número (el radio de todos los planetas) o una lista con
 # el radio de cada uno
-planet_radius = 1 
-#planet_radius = [0.5, 0.7, 1.1]
-
+#planet_radius = 0.01 
+planet_radius = [0.025, 0.015, 0.01]
 
 # Lectura del fichero de datos
 # ========================================
@@ -114,6 +113,9 @@ ax.axis("equal")  # Misma escala para ejes X e Y
 ax.set_xlim(x_min, x_max)
 ax.set_ylim(y_min, y_max)
 
+# Añadir título
+ax.set_title(r'El cohete no aterriza en la Luna ($\theta(0)=\phi(0)=0.45$)')
+
 # Si solo se ha dado un radio para todos los planetas, conviértelo a una
 # lista con todos los elementos iguales
 if not hasattr(planet_radius, "__iter__"):
@@ -125,6 +127,13 @@ else:
         raise ValueError(
                 "El número de radios especificados no coincide con el número "
                 "de planetas")
+    
+# Crea los objetos Circle para cada planeta
+planets = list()
+for i in range(nplanets):
+    planet = Circle(xy=(0, 0), radius=planet_radius[i], ec='none')
+    planets.append(planet)
+    ax.add_patch(planet)
 
 # Representa el primer fotograma
 # Pinta un punto en la posición de cada paneta y guarda el objeto asociado
