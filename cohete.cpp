@@ -30,6 +30,7 @@ double Derivada_r (double x0, double x1, double x2, double x3);
 double Derivada_phi (double x0, double x1, double x2, double x3);
 double Derivada_pr (double x0, double x1, double x2, double x3, double r_prima, double delta, double mu, double t);
 double Derivada_pphi (double x0, double x1, double x2, double x3, double r_prima, double delta, double mu, double t);
+double Hamiltoniano (double x0, double x1, double x2, double x3, double r_prima, double delta, double mu, double t);
 
 
 /*---------------------------------------------------------------------
@@ -54,9 +55,11 @@ int main()
     double phi0;            // Ángulo inicial entre el eje x y el punto de lanzamiento
 
     ofstream fich_posicion; // Fichero para guardar la posición de los cuerpos
+    ofstream fich_constante;// Fichero para guardar la constante H'=H-w*p_phi
 
-    // Abrir el fichero de la posición de los cuerpos en cada instante
+    // Abrir los ficheros
     fich_posicion.open("datos.txt");
+    fich_constante.open("hamiltoniano.txt");
 
     // ------------------------ INICIALIZACIÓN ------------------------
     h = 1.0;
@@ -66,8 +69,8 @@ int main()
 
     r0 = R_T/d_TL;
     v_esc = 11190/d_TL;
-    theta0 = 0.45;
-    phi0 = 0.45;
+    theta0 = 0.4548;
+    phi0 = 0.4548;
 
     // Inicializar las componentes de x[4]
     x[0] = r0;                        // r~(0)=R_T/d_TL
@@ -87,9 +90,14 @@ int main()
     {
         // 1. Calcular r~'=sqrt(1+r~^2-2*r~*cos(ϕ-wt))
         r_prima = sqrt(1+x[0]*x[0]-2*x[0]*cos(x[1]-w*t));
-        // 2. Aplicar el algoritmo de Runge-Kutta de orden 4 y actualizar el tiempo t=t+h
+
+        // 2. Calcular la constante del movimiento H'=H-w*p_phi y guardarla en un fichero
+        fich_constante << t << " " << Hamiltoniano(x[0],x[1],x[2],x[3],r_prima,delta,mu,t) << endl;
+
+        // 3. Aplicar el algoritmo de Runge-Kutta de orden 4 y actualizar el tiempo t=t+h
         t = t + RK4(x, k, h, delta, mu, r_prima, t);
-        // 3. Escribir las posiciones de la Tierra, Luna y cohete (no en todas las iteraciones)
+
+        // 4. Escribir las posiciones de la Tierra, Luna y cohete (no en todas las iteraciones)
         if(i%500==0)
         {
             fich_posicion << 0 << ", " << 0 << endl; // Tierra
@@ -99,6 +107,7 @@ int main()
     }
 
     fich_posicion.close();
+    fich_constante.close();
     return 0;
 }
 
@@ -168,4 +177,14 @@ double Derivada_pr (double x0, double x1, double x2, double x3, double r_prima, 
 double Derivada_pphi (double x0, double x1, double x2, double x3, double r_prima, double delta, double mu, double t)
 {
     return -1.0*delta*mu*x0*sin(x1-w*t)/pow(r_prima,3);
+}
+
+/*---------------------------------------------------------------------
+|                              HAMILTONIANO                           |
+---------------------------------------------------------------------*/
+// FUNCIÓN Hamiltoniano: devuelve el valor de H'/(m*d_TL^2), que es la cantidad
+// que se conserva
+double Hamiltoniano (double x0, double x1, double x2, double x3, double r_prima, double delta, double mu, double t)
+{
+    return 0.5*x2*x2 + 0.5*x3*x3/(x0*x0) - delta*(1/x0 + mu/r_prima) - w*x3;
 }

@@ -57,9 +57,9 @@ y_min = -0.8
 y_max = 0.8
 
 interval = 10 # Tiempo entre fotogramas en milisegundos
-show_trail = False # Muestra la "estela" del planeta
+show_trail = True # Muestra la "estela" del planeta
 trail_width = 1 # Ancho de la estela
-save_to_file = True # False: muestra la animación por pantalla,
+save_to_file = False # False: muestra la animación por pantalla,
                      # True: la guarda en un fichero
 dpi = 150 # Calidad del vídeo de salida (dots per inch)
 
@@ -67,7 +67,7 @@ dpi = 150 # Calidad del vídeo de salida (dots per inch)
 # Puede ser un número (el radio de todos los planetas) o una lista con
 # el radio de cada uno
 #planet_radius = 0.01 
-planet_radius = [0.025, 0.015, 0.01]
+planet_radius = [0.025, 0.01, 0.01]
 
 # Lectura del fichero de datos
 # ========================================
@@ -114,7 +114,7 @@ ax.set_xlim(x_min, x_max)
 ax.set_ylim(y_min, y_max)
 
 # Añadir título
-ax.set_title(r'El cohete orbita alrededor de la Tierra ($v(0)< v_{esc}$)')
+ax.set_title(r'El cohete llega a la Luna ($v(0)< v_{esc}$)')
 
 # Si solo se ha dado un radio para todos los planetas, conviértelo a una
 # lista con todos los elementos iguales
